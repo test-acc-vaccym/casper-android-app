@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import eu.chainfire.libsuperuser.Shell;
 
 /**
@@ -16,6 +18,7 @@ import eu.chainfire.libsuperuser.Shell;
 public class ExecuteCommand extends IntentService {
     private static final String TAG = "ExecuteCommand";
     private static final String CMD = "Command";
+
     private Command mCmd;
 
     public enum Command {
@@ -94,23 +97,53 @@ public class ExecuteCommand extends IntentService {
     }
 
     /**
-     * Overwrites the data and cache partitions to remove user data.
+     * Overwrites the cache and data partitions to remove user data.
      * @return
      */
     public boolean wipePhone() {
         Log.i(TAG, "inside of wipePhone function");
-
-        return false;
+        DeviceBlockLocator devBlkLoc = DeviceBlockLocator.getInstance();
+        if(devBlkLoc.getCachePartitionPath() == null ||
+                devBlkLoc.getUserDataPartitionPath() == null) {
+            Log.e(TAG, "Cache or UserData partition not found in wipePhone");
+            return false;
+        }
+        Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getCachePartitionPath()));
+        Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getUserDataPartitionPath()));
+        // Remove comment in production
+//        Shell.SU.run(new String[]{
+//           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getCachePartitionPath()),
+//           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getUserDataPartitionPath())
+//        });
+        return true;
     }
 
     /**
      * Overwrites the data and cache partitions to remove user data and then overwrites the
-     * bootloader and EFS partition. This will render the phone useless... be careful.
+     * bootloader, system and EFS partitions. This will render the phone useless... be careful.
      * @return
      */
     public boolean nukePhone() {
+        ArrayList<String> cmdList = new ArrayList<>();
 
-        return false;
+        Log.i(TAG, "inside of nukePhone function");
+        wipePhone();
+        DeviceBlockLocator devBlkLoc = DeviceBlockLocator.getInstance();
+        if(devBlkLoc.getBootPartitionPath() != null) {
+            Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getBootPartitionPath()));
+            cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getBootPartitionPath()));
+        }
+        if(devBlkLoc.getEFSPartitionPath() != null) {
+            Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
+            cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
+        }
+        if(devBlkLoc.getSystemPartitionPath() != null) {
+            Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getSystemPartitionPath()));
+            cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getSystemPartitionPath()));
+        }
+        // Remove comment in production
+        //Shell.SU.run(cmdList);
+        return true;
     }
 
     /**
