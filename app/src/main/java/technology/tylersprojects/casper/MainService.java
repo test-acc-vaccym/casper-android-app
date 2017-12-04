@@ -11,7 +11,7 @@ public class MainService extends Service {
 
     public MainService() {
         int i = 0;
-        while(i < 100) {
+        while(i < 5) {
             i++;
             try {
                 Thread.sleep(5000);
@@ -19,7 +19,7 @@ public class MainService extends Service {
             catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.d(TAG, "Casper still going");
+            Log.d(TAG, "Casper busy service id still going");
         }
     }
 
