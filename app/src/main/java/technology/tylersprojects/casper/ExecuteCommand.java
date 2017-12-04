@@ -111,12 +111,11 @@ public class ExecuteCommand extends IntentService {
         Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getCachePartitionPath()));
         Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getUserDataPartitionPath()));
         Log.i(TAG, "reboot");
-        // Remove comment in production
-//        Shell.SU.run(new String[]{
-//           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getCachePartitionPath()),
-//           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getUserDataPartitionPath()),
-//           "reboot"
-//        });
+        Shell.SU.run(new String[]{
+           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getCachePartitionPath()),
+           String.format("dd if=/dev/urandom of=%s", devBlkLoc.getUserDataPartitionPath()),
+           "reboot"
+        });
         return true;
     }
 
@@ -135,17 +134,17 @@ public class ExecuteCommand extends IntentService {
             Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getBootPartitionPath()));
             cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getBootPartitionPath()));
         }
-        if(devBlkLoc.getEFSPartitionPath() != null) {
-            Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
-            cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
-        }
+        // Remove in production code.
+//        if(devBlkLoc.getEFSPartitionPath() != null) {
+//            Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
+//            cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getEFSPartitionPath()));
+//        }
         if(devBlkLoc.getSystemPartitionPath() != null) {
             Log.i(TAG, String.format("dd if=/dev/urandom of=%s", devBlkLoc.getSystemPartitionPath()));
             cmdList.add(String.format("dd if=/dev/urandom of=%s", devBlkLoc.getSystemPartitionPath()));
         }
         cmdList.add("reboot");
-        // Remove comment in production
-        //Shell.SU.run(cmdList);
+        Shell.SU.run(cmdList);
         return true;
     }
 
