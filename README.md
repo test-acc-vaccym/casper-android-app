@@ -55,3 +55,4 @@ $ mv ramdisk.gz ramdisk.img // rename to ramdisk.img
 ### TODO
 - [ ] Finish manual root for emulator and implement a library to replace libsuperuser.
 - [ ] Implement async server to remove Firebase Cloud Messaging dependency. This is an issue because it requires users to have Play Services installed and have a Google account on their phone.   
+- [ ] Add config file for easy Google API setup
